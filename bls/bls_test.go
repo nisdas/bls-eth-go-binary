@@ -469,3 +469,21 @@ func BenchmarkDeserialization2(b *testing.B) {
 		sig.Deserialize(buf)
 	}
 }
+
+func BenchmarkSerialization(b *testing.B) {
+	b.StopTimer()
+	b.ReportAllocs()
+	err := Init(BLS12_381)
+	if err != nil {
+		b.Fatal(err)
+	}
+	VerifyOrderG1(true)
+	VerifyOrderG2(true)
+	const N = 50
+	sec, _, hash := getSecPubHash()
+	sig := sec.SignHash(hash)
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		_ = sig.Serialize()
+	}
+}
